@@ -5,10 +5,6 @@ let Table = require('cli-table');
 
 console.log('Welcome to BamaZon - the BtoZ store!');
 
-
-// app files
-let product = require('./product');
-
 // db connection 
 let conn = mysql.createConnection({
     host: 'localhost',
@@ -107,7 +103,7 @@ function whatProduct(){
 }
 
 function whatQty(productArr){
-    console.log('What quantity do you to buy?');
+    console.log('How many do you want to buy?');
     inquirer.prompt([
         {
             name: "qty",
@@ -127,11 +123,37 @@ function whatQty(productArr){
         if (remainingQty > 0) {
             // success
             // runStore();
-            console.log('Success! You have purchased ' + answer.qty + ' ' + productArr[1] + 's for a total price of ' + totalPrice.toFixed(2) );
-            initStore();
+            console.log('Success! You have purchased ' + answer.qty + ' ' + productArr[1] + 's for a total price of $' + totalPrice.toFixed(2) );
+            shopAgain();
         } else {
             console.log('Not enough available. Try again.');
-            whatQty(productArr)
+            whatQty(productArr);
+        }
+    });
+}
+
+function shopAgain(){
+    inquirer.prompt([
+        {
+            name: "again",
+            type: "list",
+            choices: [
+                'Yes, I need more stuff',
+                'No, I have enough stuff'
+            ],
+            message: 'Want to continue shopping?',
+            validate: function(value) {
+            if (isNaN(value) === false) {
+                return true;
+            }
+            return false;
+        }
+    }])
+    .then(function(answer) {
+        if (answer.again == 'Yes, I need more stuff'){
+            initStore();
+        } else {
+            console.log('Thanks for shopping at BamaZon - Come again!');
         }
     });
 }
