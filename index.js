@@ -3,7 +3,16 @@ let inquirer = require('inquirer');
 let chalk = require('chalk');
 let Table = require('cli-table');
 
-console.log('Welcome to BamaZon - the BtoZ store!');
+let welcome = `
+--------------------------------------------------------------
+*                                                            *
+*                                                            *
+*           Welcome to BamaZon - the BtoZ store!             *
+*                                                            *
+*                                                            *
+--------------------------------------------------------------
+`;
+console.log(chalk.yellow(welcome));
 
 // db connection 
 let conn = mysql.createConnection({
@@ -19,6 +28,8 @@ conn.connect(function (err) {
     initStore();
 });
 
+let consoleHR = `---------------------------------------------
+`;
 
 function initStore() {
     getProducts();
@@ -46,8 +57,7 @@ function getProducts() {
     });
 }
 
-
-let getProduct = function(productId) {
+function getProduct(productId) {
     return new Promise(function(resolve, reject) {
         if (!isNaN(productId)) {
             let query = 'SELECT * FROM products WHERE ?';
@@ -75,19 +85,21 @@ let getProduct = function(productId) {
 
 
 function whatProduct(){
-    console.log('What would you like to buy?');
+    console.log(chalk.yellow(consoleHR));
+    console.log(chalk.cyanBright('What would you like to buy?\n'));
     inquirer.prompt([
         {
             name: "productId",
             type: "input",
             message: "Product Id?",
             validate: function(value) {
-            if (isNaN(value) === false) {
-                return true;
+                if (isNaN(value) === false) {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
-    }])
+    ])
     .then(function(answer) {
         getProduct(answer.productId)
             .then(function(productArr){
@@ -103,36 +115,42 @@ function whatProduct(){
 }
 
 function whatQty(productArr){
-    console.log('How many do you want to buy?');
+    console.log(chalk.yellow(consoleHR));
+    console.log(chalk.cyanBright('How many do you want to buy?\n'));
     inquirer.prompt([
         {
             name: "qty",
             type: "input",
             message: "Stock Quantity?",
             validate: function(value) {
-            if (isNaN(value) === false) {
-                return true;
+                if (isNaN(value) === false) {
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
-    }])
+    ])
     .then(function(answer) {
         let totalPrice = productArr[3] * answer.qty;
         let remainingQty = productArr[4] - answer.qty;
-        // console.log(productArr[4] - answer.qty);
-        if (remainingQty > 0) {
-            // success
-            // runStore();
-            console.log('Success! You have purchased ' + answer.qty + ' ' + productArr[1] + 's for a total price of $' + totalPrice.toFixed(2) );
+        // console.log(remainingQty);
+        if (remainingQty >= 0) { // success
+            updateProduct(productArr[0], remainingQty);
+            console.log(chalk.whiteBright('\n' + consoleHR));
+            console.log(chalk.green.bold('Success! You have purchased ' + answer.qty + ' ' + productArr[1] + 's for a total price of $' + totalPrice.toFixed(2)));
+            console.log(chalk.whiteBright('\n' + consoleHR));
             shopAgain();
-        } else {
-            console.log('Not enough available. Try again.');
+        } else { // error
+            console.log(chalk.red('\n' + consoleHR));
+            console.log(chalk.redBright.bold('Not enough available. Try again.'));
+            console.log(chalk.red('\n' + consoleHR));
             whatQty(productArr);
         }
     });
 }
 
 function shopAgain(){
+    // console.log(chalk.yellow(consoleHR));    
     inquirer.prompt([
         {
             name: "again",
@@ -141,19 +159,26 @@ function shopAgain(){
                 'Yes, I need more stuff',
                 'No, I have enough stuff'
             ],
-            message: 'Want to continue shopping?',
-            validate: function(value) {
-            if (isNaN(value) === false) {
-                return true;
-            }
-            return false;
+            message: 'Want to continue shopping?'
         }
-    }])
+    ])
     .then(function(answer) {
         if (answer.again == 'Yes, I need more stuff'){
             initStore();
         } else {
-            console.log('Thanks for shopping at BamaZon - Come again!');
+            console.log(chalk.yellow('\n' + consoleHR));
+            console.log(chalk.yellowBright('Thanks for shopping at BamaZon - Come again!'));
+            console.log(chalk.yellow('\n' + consoleHR));
+            conn.destroy()
         }
+    });
+}
+
+function updateProduct(productId, qty) {
+    let query = 'UPDATE products SET stock_quantity = ? WHERE product_id = ?';
+    conn.query(query, [parseInt(qty), productId], function (err, res) {
+        if (err) { console.log(err); }
+        // console.log('Quantity updated');
+        // console.log(res);
     });
 }
