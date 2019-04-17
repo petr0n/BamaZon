@@ -83,7 +83,9 @@ function viewProducts(qryType){
     conn.query(query, function (err, res) {
         if (err) { console.log(err); }
         if (res.length == 0) {
-            console.log('No products found');
+            console.log(chalk.red(consoleHR));
+            console.log(chalk.red('No products found\n'));
+            console.log(chalk.red(consoleHR));
         } else {
             res.map(function(row) {
                 let productRow = [row.product_id, row.product_name, row.department_name, '$' + row.sale_price, row.stock_quantity];
@@ -124,7 +126,7 @@ function getProduct(productId) {
 
 
 function updateProduct(){
-    console.log(chalk.blueBright('What would you like to update?'));
+    console.log(chalk.blueBright('What product would you like to update?'));
     inquirer.prompt([
         {
             name: "productId",
@@ -146,7 +148,9 @@ function updateProduct(){
                 updateQty(productArr);
             })
             .catch(function(err){
+                console.log(chalk.red(consoleHR));
                 console.log(chalk.red('Error: ' + err));
+                console.log(chalk.red(consoleHR));
                 whatProduct();
             });
     });
@@ -171,12 +175,12 @@ function updateQty(productArr){
     ])
     .then(function(answer) {
         let newQty = parseInt(productArr[4]) + parseInt(answer.qty);
-        console.log(newQty);
+        // console.log(newQty);
         let query = 'UPDATE products SET stock_quantity = ? WHERE product_id = ?';
         conn.query(query, [parseInt(newQty), productArr[0]], function (err, res) {
             if (err) { console.log(err); }
-            console.log(chalk.green(consoleHR));            
-            console.log(chalk.green('Success! You have updated ' + productArr[1] + ' adding ' + answer.qty + ' items' + '\n'));
+            console.log(chalk.green(consoleHR));
+            console.log(chalk.green('Success! You have updated "' + productArr[1] + '" adding ' + answer.qty + ' items' + '\n'));
             console.log(chalk.green(consoleHR));
             init();
         });

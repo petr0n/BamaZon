@@ -19,6 +19,11 @@ When a user adds a product to their cart, the inventory of that product is reduc
     
 After adding an item to their cart users are prompted to keep shopping or quit.
 
+
+## Preview App
+![alt text](https://raw.githubusercontent.com/petr0n/ "Bamazon Customer App")
+
+
 __________
 
 ## bamazonManager.js 
@@ -46,3 +51,8 @@ This app uses the following packages
 * Chalk - styles console log 
 * mysql - allows db interaction in JS using Node
 * cli-table - for nicer looking CLI tables
+
+
+## Preview App
+
+![alt text](https://raw.githubusercontent.com/petr0n/ "Bamazon Manager App")
