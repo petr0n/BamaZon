@@ -155,19 +155,69 @@ function updateQty(productArr){
         }
     ])
     .then(function(answer) {
-        let totalPrice = productArr[3] * answer.qty;
-        let remainingQty = productArr[4] + answer.qty;
+        let newQty = parseInt(productArr[4]) + parseInt(answer.qty);
+        console.log(newQty);
         let query = 'UPDATE products SET stock_quantity = ? WHERE product_id = ?';
-        conn.query(query, [parseInt(qty), productId], function (err, res) {
+        conn.query(query, [parseInt(newQty), productArr[0]], function (err, res) {
             if (err) { console.log(err); }
             // console.log('Quantity updated');
-            // console.log(res);
-            console.log('Success! You have purchased ' + answer.qty + ' ' + productArr[1] + 's for a total price of $' + totalPrice.toFixed(2) );
+            console.log('Success! You have updated ' + productArr[1] + ' by adding ' + answer.qty + ' items');
             init();
         });
     });
 }
 
 function addProduct() {
-
+    console.log('Add Product');
+    inquirer.prompt([
+        {
+            name: 'product_name',
+            type: 'input',
+            message: 'Product Name',
+            validate: function(value){
+                return (value === '') ? false : true;     
+            }
+        },
+        {
+            name: 'department_name',
+            type: 'input',
+            message: 'Department Name',
+            validate: function(value){
+                return (value === '') ? false : true;
+            }
+        },
+        {
+            name: 'sale_price',
+            type: 'input',
+            message: 'Sale Price',
+            validate: function(value){
+                return (value === '') ? false : true;
+            }
+        },
+        {
+            name: 'stock_quantity',
+            type: 'input',
+            message: 'Quantity?',
+            validate: function(value) {
+                return (isNaN(value) === false) ? true : false;
+            }
+        }
+    ])
+    .then(function(answer) {
+        let insertVals = [
+            answer.product_name,
+            answer.department_name,
+            answer.sale_price,
+            answer.stock_quantity,
+        ];
+        console.log(insertVals);
+        let query = "INSERT INTO `products` (product_name, department_name, sale_price, stock_quantity) VALUES(?)";
+        conn.query(query, [insertVals], function (err, res) {
+            if (err) { console.log(err); }
+            // console.log('Quantity updated');
+            // console.log(res);
+            console.log('Success! New product added: ' + answer.product_name );
+            init();
+        });
+    });
 }
