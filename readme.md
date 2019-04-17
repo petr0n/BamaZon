@@ -21,7 +21,7 @@ After adding an item to their cart users are prompted to keep shopping or quit.
 
 
 ## Preview App
-![alt text](https://raw.githubusercontent.com/petr0n/ "Bamazon Customer App")
+![alt text](https://raw.githubusercontent.com/petr0n/BamaZon/master/images/bamazonCustomerJS.gif "Bamazon Customer App")
 
 
 __________
@@ -55,4 +55,4 @@ This app uses the following packages
 
 ## Preview App
 
-![alt text](https://raw.githubusercontent.com/petr0n/ "Bamazon Manager App")
+![alt text](https://raw.githubusercontent.com/petr0n/BamaZon/master/images/bamazonManagerJS.gif "Bamazon Manager App")
