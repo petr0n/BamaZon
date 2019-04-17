@@ -14,6 +14,21 @@ let conn = mysql.createConnection({
     database: 'bamazon'
 });
 
+let welcome = `
+--------------------------------------------------------------
+*                                                            *
+*                                                            *
+*               Welcome to BamaZon Manager                   *
+*              Add, update and view products                 *
+*                                                            *
+*                                                            *
+--------------------------------------------------------------
+`;
+console.log(chalk.yellow(welcome));
+
+let consoleHR = `---------------------------------------------
+`;
+
 conn.connect(function (err) {
     if (err) throw err;
     init();
@@ -109,7 +124,7 @@ function getProduct(productId) {
 
 
 function updateProduct(){
-    console.log('What would you like to update?');
+    console.log(chalk.blueBright('What would you like to update?'));
     inquirer.prompt([
         {
             name: "productId",
@@ -126,12 +141,12 @@ function updateProduct(){
     .then(function(answer) {
         getProduct(answer.productId)
             .then(function(productArr){
-                console.log('You chose: ' + productArr[1]);
+                console.log(chalk.yellowBright('\n ** You chose: ' + productArr[1] + ' ** '));
                 // console.log(productArr);
                 updateQty(productArr);
             })
             .catch(function(err){
-                console.log('Error: ' + err);
+                console.log(chalk.red('Error: ' + err));
                 whatProduct();
             });
     });
@@ -140,7 +155,7 @@ function updateProduct(){
 
 
 function updateQty(productArr){
-    console.log('How many do you want to add?');
+    console.log(chalk.blueBright('\nHow many do you want to add?'));
     inquirer.prompt([
         {
             name: "qty",
@@ -160,14 +175,16 @@ function updateQty(productArr){
         let query = 'UPDATE products SET stock_quantity = ? WHERE product_id = ?';
         conn.query(query, [parseInt(newQty), productArr[0]], function (err, res) {
             if (err) { console.log(err); }
-            // console.log('Quantity updated');
-            console.log('Success! You have updated ' + productArr[1] + ' by adding ' + answer.qty + ' items');
+            console.log(chalk.green(consoleHR));            
+            console.log(chalk.green('Success! You have updated ' + productArr[1] + ' adding ' + answer.qty + ' items' + '\n'));
+            console.log(chalk.green(consoleHR));
             init();
         });
     });
 }
 
 function addProduct() {
+    console.log(chalk.yellow(consoleHR));
     console.log('Add Product');
     inquirer.prompt([
         {
@@ -210,13 +227,15 @@ function addProduct() {
             answer.sale_price,
             answer.stock_quantity,
         ];
-        console.log(insertVals);
         let query = "INSERT INTO `products` (product_name, department_name, sale_price, stock_quantity) VALUES(?)";
         conn.query(query, [insertVals], function (err, res) {
             if (err) { console.log(err); }
             // console.log('Quantity updated');
             // console.log(res);
-            console.log('Success! New product added: ' + answer.product_name );
+            console.log(chalk.green(consoleHR));
+            console.log(chalk.green('Success! New product added: ' + answer.product_name) + '\n');
+            console.log(chalk.green(consoleHR));
+
             init();
         });
     });
